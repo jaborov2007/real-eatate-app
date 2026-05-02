@@ -1,10 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import type { Mode, RentTerm, PropertyType } from "@/data/listings";
 
-type Mode = "rent" | "sale";
-type RentTerm = "any" | "short" | "long";
-type PropertyType = "apartment" | "house" | "commercial";
+type DraftState = {
+  mode: Mode;
+  rentTerm: RentTerm;
+  propertyType: PropertyType;
+  rooms: string;
+  priceMin: string;
+  priceMax: string;
+};
 
 export default function SearchModal({
   open,
@@ -25,30 +32,8 @@ export default function SearchModal({
   rooms: string;
   priceMin: string;
   priceMax: string;
-  onApply: (next: {
-    mode: Mode;
-    rentTerm: RentTerm;
-    propertyType: PropertyType;
-    rooms: string;
-    priceMin: string;
-    priceMax: string;
-  }) => void;
+  onApply: (next: DraftState) => void;
 }) {
-  const [draft, setDraft] = useState({
-    mode,
-    rentTerm,
-    propertyType,
-    rooms,
-    priceMin,
-    priceMax,
-  });
-
-  useEffect(() => {
-    if (open) {
-      setDraft({ mode, rentTerm, propertyType, rooms, priceMin, priceMax });
-    }
-  }, [open, mode, rentTerm, propertyType, rooms, priceMin, priceMax]);
-
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -59,34 +44,56 @@ export default function SearchModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/35" onClick={onClose} />
+    <ModalContent
+      key={String(open)}
+      initial={{ mode, rentTerm, propertyType, rooms, priceMin, priceMax }}
+      onClose={onClose}
+      onApply={onApply}
+    />
+  );
+}
+
+function ModalContent({
+  initial,
+  onClose,
+  onApply,
+}: {
+  initial: DraftState;
+  onClose: () => void;
+  onApply: (next: DraftState) => void;
+}) {
+  const [draft, setDraft] = useState(initial);
+
+  return (
+    <div className="fixed inset-0 z-50 animate-fadeIn">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       <div
-        className="absolute top-0 left-0 right-0 bg-white rounded-b-2xl animate-slideDown"
+        className="absolute top-0 left-0 right-0 bg-white rounded-b-3xl shadow-2xl animate-slideDown md:max-w-lg md:mx-auto md:mt-20 md:rounded-2xl md:top-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="max-w-6xl mx-auto px-4 pt-4 pb-6 space-y-6">
+        <div className="max-w-lg mx-auto px-5 pt-5 pb-6 space-y-6">
           <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-gray-900">Filters</div>
+            <h2 className="text-xl font-bold text-[var(--color-text)]">Filters</h2>
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-600 text-sm font-medium"
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
             >
-              Close
+              <X size={18} className="text-gray-500" />
             </button>
           </div>
 
-          {/* Mode */}
-          <section className="space-y-2">
-            <div className="text-sm font-semibold text-gray-900">Type</div>
+          <section className="space-y-3">
+            <label className="text-sm font-semibold text-[var(--color-text)]">
+              Deal Type
+            </label>
             <div className="flex gap-2">
               <Pill
                 active={draft.mode === "rent"}
                 onClick={() => setDraft((d) => ({ ...d, mode: "rent" }))}
               >
-                For rent
+                For Rent
               </Pill>
               <Pill
                 active={draft.mode === "sale"}
@@ -94,7 +101,7 @@ export default function SearchModal({
                   setDraft((d) => ({ ...d, mode: "sale", rentTerm: "any" }))
                 }
               >
-                For sale
+                For Sale
               </Pill>
             </div>
 
@@ -116,86 +123,70 @@ export default function SearchModal({
             )}
           </section>
 
-          {/* Price */}
-          <section className="space-y-2">
-            <div className="text-sm font-semibold text-gray-900">Price</div>
+          <section className="space-y-3">
+            <label className="text-sm font-semibold text-[var(--color-text)]">
+              Property Type
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["apartment", "house", "commercial"] as const).map((type) => (
+                <Pill
+                  key={type}
+                  active={draft.propertyType === type}
+                  onClick={() => setDraft((d) => ({ ...d, propertyType: type }))}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Pill>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <label className="text-sm font-semibold text-[var(--color-text)]">
+              Price Range
+            </label>
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="Min"
                 value={draft.priceMin}
                 onChange={(v) => setDraft((d) => ({ ...d, priceMin: v }))}
-                placeholder="0"
+                placeholder="$0"
               />
               <Input
                 label="Max"
                 value={draft.priceMax}
                 onChange={(v) => setDraft((d) => ({ ...d, priceMax: v }))}
-                placeholder="1000"
+                placeholder="$1,000"
               />
             </div>
           </section>
 
-          {/* Property */}
-          <section className="space-y-2">
-            <div className="text-sm font-semibold text-gray-900">Property</div>
-            <div className="grid grid-cols-3 gap-2">
-              <Pill
-                active={draft.propertyType === "apartment"}
-                onClick={() =>
-                  setDraft((d) => ({ ...d, propertyType: "apartment" }))
-                }
-              >
-                Apartment
-              </Pill>
-              <Pill
-                active={draft.propertyType === "house"}
-                onClick={() =>
-                  setDraft((d) => ({ ...d, propertyType: "house" }))
-                }
-              >
-                House
-              </Pill>
-              <Pill
-                active={draft.propertyType === "commercial"}
-                onClick={() =>
-                  setDraft((d) => ({ ...d, propertyType: "commercial" }))
-                }
-              >
-                Commercial
-              </Pill>
+          <section className="space-y-3">
+            <label className="text-sm font-semibold text-[var(--color-text)]">
+              Rooms
+            </label>
+            <div className="flex gap-2">
+              {["", "1", "2", "3", "4"].map((r) => (
+                <Pill
+                  key={r}
+                  active={draft.rooms === r}
+                  onClick={() => setDraft((d) => ({ ...d, rooms: r }))}
+                >
+                  {r === "" ? "Any" : r === "4" ? "4+" : r}
+                </Pill>
+              ))}
             </div>
           </section>
 
-          {/* Rooms */}
-          <section className="space-y-2">
-            <div className="text-sm font-semibold text-gray-900">Rooms</div>
-            <select
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900"
-              value={draft.rooms}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, rooms: e.target.value }))
-              }
-            >
-              <option value="">Any</option>
-              <option value="1">1 room</option>
-              <option value="2">2 rooms</option>
-              <option value="3">3 rooms</option>
-              <option value="4">4+ rooms</option>
-            </select>
-          </section>
-
-          <div className="pt-2">
-            <button
-              type="button"
-              className="w-full bg-black text-white rounded-xl py-3 text-sm font-semibold active:bg-gray-900"
-              onClick={() => {
-                onApply(draft);
-                onClose();
-              }}
-            >
-              Show results
-            </button>
-          </div>
+          <button
+            type="button"
+            className="w-full bg-[var(--color-primary)] text-white rounded-xl py-3.5 text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg shadow-blue-500/20"
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+          >
+            Show Results
+          </button>
         </div>
       </div>
     </div>
@@ -215,10 +206,10 @@ function Pill({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-4 py-2 text-sm font-medium ${
+      className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
         active
-          ? "bg-black text-white"
-          : "bg-gray-100 text-gray-900 active:bg-gray-200"
+          ? "bg-[var(--color-primary)] text-white shadow-sm"
+          : "bg-gray-50 border border-[var(--color-border)] text-gray-700 hover:bg-gray-100"
       }`}
     >
       {children}
@@ -239,12 +230,12 @@ function Input({
 }) {
   return (
     <label className="block">
-      <div className="text-xs font-medium text-gray-600 mb-1">{label}</div>
+      <div className="text-xs font-medium text-gray-500 mb-1.5">{label}</div>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-gray-400"
+        className="w-full border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 transition-all"
       />
     </label>
   );
