@@ -1,7 +1,7 @@
 "use client";
 
-type Mode = "rent" | "sale";
-type RentTerm = "any" | "short" | "long";
+import type { Mode, RentTerm } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 
 export default function QuickChips({
   mode,
@@ -14,29 +14,32 @@ export default function QuickChips({
   onModeChange: (m: Mode) => void;
   onRentTermChange: (t: RentTerm) => void;
 }) {
+  const { t } = useLang();
+
   return (
-    <div className="px-4 py-3 border-b bg-white">
-      <div className="max-w-6xl mx-auto flex gap-2 overflow-x-auto">
+    <div className="bg-white border-b border-[var(--color-border)]">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
         <Chip active={mode === "rent"} onClick={() => onModeChange("rent")}>
-          For rent
+          {t("forRent")}
         </Chip>
         <Chip active={mode === "sale"} onClick={() => onModeChange("sale")}>
-          For sale
+          {t("forSale")}
         </Chip>
 
         {mode === "rent" && (
           <>
+            <div className="w-px bg-gray-200 mx-1 shrink-0" />
             <Chip
               active={rentTerm === "short"}
               onClick={() => onRentTermChange("short")}
             >
-              Daily rent
+              {t("daily")}
             </Chip>
             <Chip
               active={rentTerm === "long"}
               onClick={() => onRentTermChange("long")}
             >
-              Long-term
+              {t("longTerm")}
             </Chip>
           </>
         )}
@@ -58,10 +61,10 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium ${
+      className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
         active
-          ? "bg-black text-white"
-          : "bg-gray-100 text-gray-800 active:bg-gray-200"
+          ? "bg-[var(--color-primary)] text-white shadow-sm"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       }`}
     >
       {children}

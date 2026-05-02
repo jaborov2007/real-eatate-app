@@ -2,30 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Compass, Heart, User } from "lucide-react";
+import { Home, Map, PlusCircle, MessageCircle, User } from "lucide-react";
+import { useLang } from "@/context/LangContext";
+import type { TranslationKey } from "@/context/LangContext";
 
-const NAV = [
-  { href: "/", label: "Find Homes", icon: Home },
-  { href: "/for-you", label: "For You", icon: Compass },
-  { href: "/saved", label: "Saved", icon: Heart },
-  { href: "/profile", label: "My Home", icon: User },
+const NAV: { href: string; labelKey: TranslationKey; icon: typeof Home }[] = [
+  { href: "/", labelKey: "home", icon: Home },
+  { href: "/map", labelKey: "map", icon: Map },
+  { href: "/post", labelKey: "postAd", icon: PlusCircle },
+  { href: "/messages", labelKey: "chat", icon: MessageCircle },
+  { href: "/profile", labelKey: "profile", icon: User },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLang();
 
-  if (pathname.startsWith("/listings/")) return null;
+  if (pathname.startsWith("/listings/") || pathname.startsWith("/chat/") || pathname === "/auth")
+    return null;
 
   return (
     <nav
-      className="fixed left-0 right-0 z-50 bg-black md:hidden"
-      style={{
-        bottom: 0,
-        paddingBottom: "env(safe-area-inset-bottom)",
-      }}
+      className="fixed left-0 right-0 bottom-0 z-50 bg-white/90 backdrop-blur-xl border-t border-[var(--color-border)] md:hidden pb-safe"
     >
-      <div className="grid grid-cols-4 h-[64px]">
-        {NAV.map(({ href, label, icon: Icon }) => {
+      <div className="grid grid-cols-5 h-16">
+        {NAV.map(({ href, labelKey, icon: Icon }) => {
           const active =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -33,19 +34,31 @@ export default function BottomNav() {
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center justify-center gap-[2px]"
+              className="flex flex-col items-center justify-center gap-0.5"
             >
-              <Icon
-                size={22}
-                strokeWidth={2}
-                className={active ? "text-[#E11C2A]" : "text-white"}
-              />
-              <span
-                className={`text-[11px] font-medium ${
-                  active ? "text-[#E11C2A]" : "text-white"
+              <div
+                className={`flex items-center justify-center w-10 h-7 rounded-full transition-colors ${
+                  active ? "bg-[var(--color-primary-light)]" : ""
                 }`}
               >
-                {label}
+                <Icon
+                  size={20}
+                  strokeWidth={active ? 2.5 : 1.8}
+                  className={
+                    active
+                      ? "text-[var(--color-primary)]"
+                      : "text-gray-400"
+                  }
+                />
+              </div>
+              <span
+                className={`text-[10px] font-medium ${
+                  active
+                    ? "text-[var(--color-primary)]"
+                    : "text-gray-400"
+                }`}
+              >
+                {t(labelKey)}
               </span>
             </Link>
           );
