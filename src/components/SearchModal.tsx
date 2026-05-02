@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type { Mode, RentTerm, PropertyType } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 
 type DraftState = {
   mode: Mode;
@@ -63,6 +64,7 @@ function ModalContent({
   onApply: (next: DraftState) => void;
 }) {
   const [draft, setDraft] = useState(initial);
+  const { t } = useLang();
 
   return (
     <div className="fixed inset-0 z-50 animate-fadeIn">
@@ -74,7 +76,7 @@ function ModalContent({
       >
         <div className="max-w-lg mx-auto px-5 pt-5 pb-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-[var(--color-text)]">Filters</h2>
+            <h2 className="text-xl font-bold text-[var(--color-text)]">{t("filters")}</h2>
             <button
               type="button"
               onClick={onClose}
@@ -86,14 +88,14 @@ function ModalContent({
 
           <section className="space-y-3">
             <label className="text-sm font-semibold text-[var(--color-text)]">
-              Deal Type
+              {t("dealType")}
             </label>
             <div className="flex gap-2">
               <Pill
                 active={draft.mode === "rent"}
                 onClick={() => setDraft((d) => ({ ...d, mode: "rent" }))}
               >
-                For Rent
+                {t("forRent")}
               </Pill>
               <Pill
                 active={draft.mode === "sale"}
@@ -101,7 +103,7 @@ function ModalContent({
                   setDraft((d) => ({ ...d, mode: "sale", rentTerm: "any" }))
                 }
               >
-                For Sale
+                {t("forSale")}
               </Pill>
             </div>
 
@@ -111,13 +113,13 @@ function ModalContent({
                   active={draft.rentTerm === "short"}
                   onClick={() => setDraft((d) => ({ ...d, rentTerm: "short" }))}
                 >
-                  Daily
+                  {t("daily")}
                 </Pill>
                 <Pill
                   active={draft.rentTerm === "long"}
                   onClick={() => setDraft((d) => ({ ...d, rentTerm: "long" }))}
                 >
-                  Long-term
+                  {t("longTerm")}
                 </Pill>
               </div>
             )}
@@ -125,7 +127,7 @@ function ModalContent({
 
           <section className="space-y-3">
             <label className="text-sm font-semibold text-[var(--color-text)]">
-              Property Type
+              {t("propertyType")}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {(["apartment", "house", "commercial"] as const).map((type) => (
@@ -134,7 +136,7 @@ function ModalContent({
                   active={draft.propertyType === type}
                   onClick={() => setDraft((d) => ({ ...d, propertyType: type }))}
                 >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {t(type)}
                 </Pill>
               ))}
             </div>
@@ -142,17 +144,17 @@ function ModalContent({
 
           <section className="space-y-3">
             <label className="text-sm font-semibold text-[var(--color-text)]">
-              Price Range
+              {t("priceRange")}
             </label>
             <div className="grid grid-cols-2 gap-3">
               <Input
-                label="Min"
+                label={t("min")}
                 value={draft.priceMin}
                 onChange={(v) => setDraft((d) => ({ ...d, priceMin: v }))}
                 placeholder="$0"
               />
               <Input
-                label="Max"
+                label={t("max")}
                 value={draft.priceMax}
                 onChange={(v) => setDraft((d) => ({ ...d, priceMax: v }))}
                 placeholder="$1,000"
@@ -162,31 +164,51 @@ function ModalContent({
 
           <section className="space-y-3">
             <label className="text-sm font-semibold text-[var(--color-text)]">
-              Rooms
+              {t("rooms")}
             </label>
             <div className="flex gap-2">
-              {["", "1", "2", "3", "4"].map((r) => (
+              {["1", "2", "3", "4+"].map((r) => (
                 <Pill
                   key={r}
                   active={draft.rooms === r}
-                  onClick={() => setDraft((d) => ({ ...d, rooms: r }))}
+                  onClick={() =>
+                    setDraft((d) => ({ ...d, rooms: d.rooms === r ? "" : r }))
+                  }
                 >
-                  {r === "" ? "Any" : r === "4" ? "4+" : r}
+                  {r}
                 </Pill>
               ))}
             </div>
           </section>
 
-          <button
-            type="button"
-            className="w-full bg-[var(--color-primary)] text-white rounded-xl py-3.5 text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg shadow-blue-500/20"
-            onClick={() => {
-              onApply(draft);
-              onClose();
-            }}
-          >
-            Show Results
-          </button>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() =>
+                setDraft({
+                  mode: "rent",
+                  rentTerm: "any",
+                  propertyType: "apartment",
+                  rooms: "",
+                  priceMin: "",
+                  priceMax: "",
+                })
+              }
+              className="flex-1 py-3 rounded-xl border border-[var(--color-border)] text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              {t("reset")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onApply(draft);
+                onClose();
+              }}
+              className="flex-1 py-3 rounded-xl bg-[var(--color-primary)] text-white text-sm font-semibold hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg shadow-blue-500/20"
+            >
+              {t("apply")}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -194,13 +216,13 @@ function ModalContent({
 }
 
 function Pill({
+  children,
   active,
   onClick,
-  children,
 }: {
-  active?: boolean;
-  onClick: () => void;
   children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
 }) {
   return (
     <button
@@ -226,16 +248,17 @@ function Input({
   label: string;
   value: string;
   onChange: (v: string) => void;
-  placeholder?: string;
+  placeholder: string;
 }) {
   return (
     <label className="block">
-      <div className="text-xs font-medium text-gray-500 mb-1.5">{label}</div>
+      <span className="text-xs text-gray-500 mb-1 block">{label}</span>
       <input
+        type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 transition-all"
+        className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2.5 text-sm text-[var(--color-text)] placeholder-gray-400 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/10 transition-all"
       />
     </label>
   );

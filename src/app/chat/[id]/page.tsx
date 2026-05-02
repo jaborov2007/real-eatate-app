@@ -11,10 +11,12 @@ import {
 } from "@/data/conversations";
 import { listings } from "@/data/listings";
 import type { Message } from "@/data/conversations";
+import { useLang } from "@/context/LangContext";
 
 export default function ChatPage() {
   const params = useParams();
   const listingId = params.id as string;
+  const { t } = useLang();
 
   const conv = conversations.find((c) => c.listingId === listingId);
   const listing = listings.find((l) => l.id === listingId);
@@ -90,7 +92,7 @@ export default function ChatPage() {
               {otherParticipant.name}
             </p>
             <p className="text-xs text-gray-500">
-              {otherParticipant.online ? "Online" : "Last seen recently"}
+              {otherParticipant.online ? t("online") : t("lastSeen")}
             </p>
           </div>
 
@@ -102,7 +104,6 @@ export default function ChatPage() {
           </button>
         </div>
 
-        {/* Listing preview bar */}
         {listing && (
           <Link
             href={`/listings/${listing.id}`}
@@ -174,7 +175,7 @@ export default function ChatPage() {
                     sendMessage();
                   }
                 }}
-                placeholder="Write a message..."
+                placeholder={`${t("writeMessage")}...`}
                 rows={1}
                 className="w-full bg-transparent text-sm text-[var(--color-text)] placeholder-gray-400 outline-none resize-none"
               />
@@ -209,15 +210,15 @@ function formatTime(ts: string): string {
 
 function getAutoReply(userMessage: string): string {
   const lower = userMessage.toLowerCase();
-  if (lower.includes("price") || lower.includes("cost") || lower.includes("money"))
-    return "The price is firm, but we can discuss the terms. Would you like to schedule a viewing?";
-  if (lower.includes("available") || lower.includes("free"))
-    return "Yes, this property is currently available! When would you like to see it?";
-  if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey"))
-    return "Hello! Thank you for your interest. How can I help you?";
-  if (lower.includes("when") || lower.includes("time") || lower.includes("meet"))
-    return "I am available most days from 10 AM to 6 PM. What time works best for you?";
-  if (lower.includes("address") || lower.includes("where") || lower.includes("location"))
-    return "I will send you the exact address once we confirm the viewing time. The area is very accessible by public transport.";
-  return "Thank you for your message. I will get back to you shortly with more details!";
+  if (lower.includes("price") || lower.includes("cost") || lower.includes("money") || lower.includes("цена") || lower.includes("нарх"))
+    return "Цена окончательная, но мы можем обсудить условия. Хотите назначить просмотр?";
+  if (lower.includes("available") || lower.includes("free") || lower.includes("свободн") || lower.includes("озод"))
+    return "Да, объект сейчас свободен! Когда вы хотели бы посмотреть?";
+  if (lower.includes("hello") || lower.includes("hi") || lower.includes("салом") || lower.includes("привет"))
+    return "Здравствуйте! Спасибо за интерес. Чем могу помочь?";
+  if (lower.includes("when") || lower.includes("time") || lower.includes("когда") || lower.includes("вақт"))
+    return "Я доступен большинство дней с 10:00 до 18:00. Какое время вам подходит?";
+  if (lower.includes("address") || lower.includes("where") || lower.includes("адрес") || lower.includes("суроға"))
+    return "Я отправлю вам точный адрес, когда подтвердим время просмотра. Район очень удобный для транспорта.";
+  return "Спасибо за ваше сообщение. Я скоро отвечу с подробностями!";
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Mode, RentTerm } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 
 export default function QuickChips({
   mode,
@@ -13,14 +14,16 @@ export default function QuickChips({
   onModeChange: (m: Mode) => void;
   onRentTermChange: (t: RentTerm) => void;
 }) {
+  const { t } = useLang();
+
   return (
     <div className="bg-white border-b border-[var(--color-border)]">
       <div className="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar">
         <Chip active={mode === "rent"} onClick={() => onModeChange("rent")}>
-          For Rent
+          {t("forRent")}
         </Chip>
         <Chip active={mode === "sale"} onClick={() => onModeChange("sale")}>
-          For Sale
+          {t("forSale")}
         </Chip>
 
         {mode === "rent" && (
@@ -30,13 +33,13 @@ export default function QuickChips({
               active={rentTerm === "short"}
               onClick={() => onRentTermChange("short")}
             >
-              Daily
+              {t("daily")}
             </Chip>
             <Chip
               active={rentTerm === "long"}
               onClick={() => onRentTermChange("long")}
             >
-              Long-term
+              {t("longTerm")}
             </Chip>
           </>
         )}

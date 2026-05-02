@@ -6,6 +6,7 @@ import SearchHeader from "@/components/SearchHeader";
 import QuickChips from "@/components/QuickChips";
 import SearchModal from "@/components/SearchModal";
 import { listings } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 import type { Mode, RentTerm, PropertyType } from "@/data/listings";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
   const [rooms, setRooms] = useState("");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
+  const { t } = useLang();
 
   const filtered = useMemo(() => {
     return listings
@@ -62,13 +64,12 @@ export default function Home() {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Results count */}
         <div className="mb-4 flex items-center justify-between">
           <p className="text-sm text-gray-500">
             <span className="font-semibold text-[var(--color-text)]">
               {filtered.length}
             </span>{" "}
-            {filtered.length === 1 ? "listing" : "listings"} found
+            {filtered.length === 1 ? t("listingFound") : t("listingsFound")}
           </p>
         </div>
 
@@ -76,10 +77,10 @@ export default function Home() {
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🏠</div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              No listings found
+              {t("noListings")}
             </h3>
             <p className="text-sm text-gray-500 max-w-sm mx-auto">
-              Try changing the city or adjusting your filters to see more results.
+              {t("noListingsHint")}
             </p>
           </div>
         ) : (

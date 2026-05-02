@@ -13,8 +13,11 @@ import {
   Shield,
   Star,
 } from "lucide-react";
+import { useLang } from "@/context/LangContext";
 
 export default function ProfilePage() {
+  const { t } = useLang();
+
   return (
     <div className="max-w-2xl mx-auto px-5 py-6 space-y-6">
       {/* User card */}
@@ -37,7 +40,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-1 mt-1.5">
               <Star size={14} className="text-amber-400 fill-amber-400" />
               <span className="text-xs font-medium text-gray-600">
-                Member since 2024
+                {t("memberSince")} 2024
               </span>
             </div>
           </div>
@@ -49,26 +52,26 @@ export default function ProfilePage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <StatCard count={2} label="Active Ads" />
-        <StatCard count={5} label="Favorites" />
-        <StatCard count={3} label="Chats" />
+        <StatCard count={2} label={t("activeAds")} />
+        <StatCard count={5} label={t("favorites")} />
+        <StatCard count={3} label={t("chats")} />
       </div>
 
       {/* Menu sections */}
       <div className="bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden">
         <MenuLink
           icon={<FileText size={20} />}
-          label="My Listings"
+          label={t("myListings")}
           href="/post"
         />
         <MenuLink
           icon={<Heart size={20} />}
-          label="Favorites"
+          label={t("favorites")}
           href="/"
         />
         <MenuLink
           icon={<Bell size={20} />}
-          label="Notifications"
+          label={t("notifications")}
           href="/messages"
           badge={2}
         />
@@ -77,28 +80,31 @@ export default function ProfilePage() {
       <div className="bg-white rounded-2xl border border-[var(--color-border)] overflow-hidden">
         <MenuLink
           icon={<Shield size={20} />}
-          label="Privacy & Security"
+          label={t("privacySecurity")}
           href="/profile"
         />
         <MenuLink
           icon={<Settings size={20} />}
-          label="App Settings"
+          label={t("appSettings")}
           href="/profile"
         />
         <MenuLink
           icon={<HelpCircle size={20} />}
-          label="Help & Support"
+          label={t("helpSupport")}
           href="/profile"
         />
       </div>
 
-      <button className="w-full flex items-center gap-3 px-5 py-4 bg-white rounded-2xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors">
+      <Link
+        href="/auth"
+        className="w-full flex items-center gap-3 px-5 py-4 bg-white rounded-2xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
+      >
         <LogOut size={20} />
-        <span className="font-medium text-sm">Log Out</span>
-      </button>
+        <span className="font-medium text-sm">{t("logOut")}</span>
+      </Link>
 
       <p className="text-center text-xs text-gray-400 pb-4">
-        RealHome v1.0.0
+        arzon.pro v2.0.0
       </p>
     </div>
   );

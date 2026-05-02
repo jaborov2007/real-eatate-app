@@ -2,6 +2,7 @@
 
 import CitySelect from "@/components/CitySelect";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { useLang } from "@/context/LangContext";
 
 export default function SearchHeader({
   cityId,
@@ -12,6 +13,8 @@ export default function SearchHeader({
   onCityChange: (cityId: string) => void;
   onOpenFilters: () => void;
 }) {
+  const { t } = useLang();
+
   return (
     <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-xl border-b border-[var(--color-border)]">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -22,7 +25,7 @@ export default function SearchHeader({
           className="flex-1 flex items-center gap-3 bg-gray-50 border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-gray-500 cursor-pointer hover:border-gray-300 hover:bg-gray-100 transition-colors"
         >
           <Search size={18} className="text-gray-400 shrink-0" />
-          <span className="text-sm flex-1 truncate">Search & Filters</span>
+          <span className="text-sm flex-1 truncate">{t("searchFilters")}</span>
 
           <button
             type="button"

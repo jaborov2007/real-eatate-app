@@ -4,15 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { conversations, currentUserId } from "@/data/conversations";
+import { useLang } from "@/context/LangContext";
 
 export default function MessagesPage() {
+  const { t } = useLang();
+
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header */}
       <div className="px-5 pt-6 pb-4">
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">Messages</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text)]">{t("messages")}</h1>
         <p className="text-sm text-gray-500 mt-1">
-          {conversations.length} conversations
+          {conversations.length} {t("conversations")}
         </p>
       </div>
 
@@ -22,10 +24,10 @@ export default function MessagesPage() {
             <MessageCircle size={32} className="text-[var(--color-primary)]" />
           </div>
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
-            No messages yet
+            {t("noMessages")}
           </h3>
           <p className="text-sm text-gray-500 max-w-xs mx-auto">
-            Start a conversation by contacting a seller from any listing page.
+            {t("noMessagesHint")}
           </p>
         </div>
       ) : (
@@ -46,7 +48,6 @@ export default function MessagesPage() {
                 href={`/chat/${conv.listingId}`}
                 className="flex items-start gap-3 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
               >
-                {/* Avatar */}
                 <div className="relative shrink-0">
                   <Image
                     src={other?.avatar ?? "/images/avatar1.jpg"}
@@ -60,7 +61,6 @@ export default function MessagesPage() {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-semibold text-sm text-[var(--color-text)] truncate">
@@ -71,7 +71,6 @@ export default function MessagesPage() {
                     </span>
                   </div>
 
-                  {/* Listing preview */}
                   <div className="flex items-center gap-2 mt-1">
                     <Image
                       src={conv.listingImage}
@@ -85,7 +84,6 @@ export default function MessagesPage() {
                     </span>
                   </div>
 
-                  {/* Last message */}
                   <p className="text-sm text-gray-500 mt-1 truncate">
                     {isMyLastMsg && (
                       <span className="text-gray-400">You: </span>
@@ -94,7 +92,6 @@ export default function MessagesPage() {
                   </p>
                 </div>
 
-                {/* Unread badge */}
                 {unreadCount > 0 && (
                   <div className="shrink-0 mt-1 w-5 h-5 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
                     <span className="text-[10px] font-bold text-white">

@@ -5,9 +5,11 @@ import Link from "next/link";
 import { Heart, MapPin } from "lucide-react";
 import { useState } from "react";
 import type { Listing } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 
 export default function ListingCard({ listing }: { listing: Listing }) {
   const [liked, setLiked] = useState(false);
+  const { t } = useLang();
 
   return (
     <Link
@@ -23,10 +25,8 @@ export default function ListingCard({ listing }: { listing: Listing }) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
 
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
-        {/* Like button */}
         <button
           type="button"
           onClick={(e) => {
@@ -42,12 +42,10 @@ export default function ListingCard({ listing }: { listing: Listing }) {
           />
         </button>
 
-        {/* Freshness badge */}
         <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-full text-xs font-medium text-gray-700 shadow-sm">
           {listing.freshness}
         </div>
 
-        {/* Mode badge */}
         <div
           className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold shadow-sm ${
             listing.mode === "rent"
@@ -55,7 +53,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
               : "bg-[var(--color-primary)] text-white"
           }`}
         >
-          {listing.mode === "rent" ? "For Rent" : "For Sale"}
+          {listing.mode === "rent" ? t("forRent") : t("forSale")}
         </div>
       </div>
 

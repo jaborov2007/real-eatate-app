@@ -18,12 +18,14 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { listings } from "@/data/listings";
+import { useLang } from "@/context/LangContext";
 
 export default function ListingDetailPage() {
   const params = useParams();
   const listing = listings.find((l) => l.id === params.id) ?? listings[0];
   const [currentImage, setCurrentImage] = useState(0);
   const [liked, setLiked] = useState(false);
+  const { t } = useLang();
 
   const prevImage = () =>
     setCurrentImage((i) => (i === 0 ? listing.images.length - 1 : i - 1));
@@ -45,7 +47,6 @@ export default function ListingDetailPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30" />
 
-          {/* Top bar */}
           <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
             <Link
               href="/"
@@ -69,7 +70,6 @@ export default function ListingDetailPage() {
             </div>
           </div>
 
-          {/* Image nav arrows */}
           {listing.images.length > 1 && (
             <>
               <button
@@ -87,7 +87,6 @@ export default function ListingDetailPage() {
             </>
           )}
 
-          {/* Image dots */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
             {listing.images.map((_, i) => (
               <button
@@ -102,7 +101,6 @@ export default function ListingDetailPage() {
             ))}
           </div>
 
-          {/* Image counter */}
           <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full">
             {currentImage + 1} / {listing.images.length}
           </div>
@@ -112,7 +110,6 @@ export default function ListingDetailPage() {
       {/* Content */}
       <div className="max-w-3xl mx-auto">
         <div className="p-5 space-y-6">
-          {/* Price & badges */}
           <div>
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -132,38 +129,36 @@ export default function ListingDetailPage() {
                     : "bg-blue-100 text-blue-700"
                 }`}
               >
-                {listing.mode === "rent" ? "For Rent" : "For Sale"}
+                {listing.mode === "rent" ? t("forRent") : t("forSale")}
               </span>
             </div>
           </div>
 
-          {/* Quick facts */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <FactCard
               icon={<BedDouble size={20} />}
-              label="Rooms"
+              label={t("rooms")}
               value={String(listing.rooms)}
             />
             <FactCard
               icon={<Ruler size={20} />}
-              label="Area"
+              label={t("area")}
               value={`${listing.area} m²`}
             />
             {listing.floor && (
               <FactCard
                 icon={<Building size={20} />}
-                label="Floor"
+                label={t("floor")}
                 value={listing.floor}
               />
             )}
             <FactCard
               icon={<MapPin size={20} />}
-              label="District"
+              label={t("district")}
               value={listing.district.split(" · ").pop() ?? ""}
             />
           </div>
 
-          {/* Location */}
           <div className="flex items-center gap-2 text-gray-600">
             <MapPin size={18} className="text-[var(--color-primary)] shrink-0" />
             <span className="text-sm font-medium">{listing.district}</span>
@@ -172,17 +167,15 @@ export default function ListingDetailPage() {
             </span>
           </div>
 
-          {/* Description */}
           <div>
             <h3 className="text-sm font-semibold text-[var(--color-text)] mb-2">
-              Description
+              {t("description")}
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
               {listing.description}
             </p>
           </div>
 
-          {/* Seller card */}
           <div className="bg-white rounded-2xl border border-[var(--color-border)] p-4">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -202,14 +195,13 @@ export default function ListingDetailPage() {
                   {listing.seller.name}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {listing.seller.online ? "Online now" : "Last seen recently"}
+                  {listing.seller.online ? t("online") : t("lastSeen")}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sticky actions */}
         <div className="sticky bottom-0 bg-white/90 backdrop-blur-xl border-t border-[var(--color-border)] p-4">
           <div className="flex gap-3 max-w-3xl mx-auto">
             <Link
@@ -217,14 +209,14 @@ export default function ListingDetailPage() {
               className="flex-1 bg-[var(--color-primary)] text-white py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg shadow-blue-500/20"
             >
               <MessageCircle size={18} />
-              Write Message
+              {t("writeMessage")}
             </Link>
             <a
               href={`tel:${listing.seller.phone}`}
               className="flex-1 border-2 border-[var(--color-border)] py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 text-[var(--color-text)] hover:bg-gray-50 transition-colors"
             >
               <Phone size={18} />
-              Call
+              {t("call")}
             </a>
           </div>
         </div>
